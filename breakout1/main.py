@@ -32,7 +32,7 @@ def draw_ball():
         by *= -1
     if ball_y >= 603:
         game_over()
-    if ball_y >= 560 and ball_x >= rack_x - 10 and ball_x <= rack_x + 50:
+    if ball_y >= 560 and rack_x - 10 <= ball_x <= rack_x + 50:
         by *= -1
     ball_x += bx
     ball_y += by
@@ -78,24 +78,25 @@ def draw_racket():
         rack_x -= 5
 
 
-block = []
-for x_ in range(5):
-    for y_ in range(4):
-        block.append({'x': x_ * 80 + 5, 'y': y_ * 40 + 10, 'st': 1})
+class Block:
+    def __init__(self, x, y, st):
+        self.x = x
+        self.y = y
+        self.st = st
+
+
+blocks = [Block(80 * xx + 5, 40 * yy + 10, 1) for xx in range(5) for yy in range(4)]
 
 
 def draw_block():
     global ball_x, ball_y, by
     block_count = 0
-    for i in range(len(block)):
-        x = block[i]['x']
-        y = block[i]['y']
-        st = block[i]['st']
-        if ball_y <= y + 30 and x - 10 <= ball_x <= x + 60 and st == 1:
+    for block in blocks:
+        if ball_y <= block.y + 30 and block.x - 10 <= ball_x <= block.x + 60 and block.st == 1:
             by *= -1
-            block[i]['st'] = 0
-        if st == 1:
-            can.create_rectangle(x, y, x + 70, y + 30, fill='white')
+            block.st = 0
+        if block.st == 1:
+            can.create_rectangle(block.x, block.y, block.x + 70, block.y + 30, fill='white')
             block_count += 1
     if block_count == 0:
         game_clear()
