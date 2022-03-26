@@ -24,7 +24,6 @@ def game_clear():
     sys.exit()
 
 
-
 def draw_ball():
     global ball_x, ball_y, bx, by
     can.create_oval(ball_x, ball_y, ball_x + 20, ball_y + 20, fill='white')
@@ -89,23 +88,23 @@ def draw_racket():
 
 
 class Block:
-    def __init__(self, x, y, st):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.st = st
+        self.is_broken = False
 
 
-blocks = [Block(80 * xx + 5, 40 * yy + 10, 1) for xx in range(5) for yy in range(4)]
+blocks = [Block(80 * xx + 5, 40 * yy + 10) for xx in range(5) for yy in range(4)]
 
 
 def draw_block():
     global ball_x, ball_y, by
     block_count = 0
     for block in blocks:
-        if ball_y <= block.y + 30 and block.x - 10 <= ball_x <= block.x + 60 and block.st == 1:
+        if ball_y <= block.y + 30 and block.x - 10 <= ball_x <= block.x + 60 and not block.is_broken:
             by *= -1
-            block.st = 0
-        if block.st == 1:
+            block.is_broken = True
+        if not block.is_broken:
             can.create_rectangle(block.x, block.y, block.x + 70, block.y + 30, fill='white')
             block_count += 1
     if block_count == 0:
