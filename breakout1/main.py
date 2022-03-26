@@ -1,3 +1,4 @@
+import sys
 import tkinter as tk
 from tkinter import messagebox
 
@@ -19,7 +20,9 @@ def game_over():
 
 
 def game_clear():
-    messagebox.showinfo('Information', 'Game over!')
+    messagebox.showinfo('Information', 'Game Clear!')
+    sys.exit()
+
 
 
 def draw_ball():
