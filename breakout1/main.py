@@ -43,22 +43,22 @@ key_press_r = False
 key_press_l = False
 
 
-def right_key_press(event):
+def right_key_press(_):
     global key_press_r
     key_press_r = True
 
 
-def right_key_release(event):
+def right_key_release(_):
     global key_press_r
     key_press_r = False
 
 
-def left_key_press(event):
+def left_key_press(_):
     global key_press_l
     key_press_l = True
 
 
-def left_key_release(event):
+def left_key_release(_):
     global key_press_l
     key_press_l = False
 
