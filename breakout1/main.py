@@ -32,13 +32,12 @@ def draw_ball():
         by *= -1
     if ball_y >= 603:
         game_over()
-    if ball_y >= 560 and rack_x - 10 <= ball_x <= rack_x + 50:
+    if ball_y >= 560 and racket.x - 10 <= ball_x <= racket.x + 50:
         by *= -1
     ball_x += bx
     ball_y += by
 
 
-rack_x = 170
 key_press_r = False
 key_press_l = False
 
@@ -69,13 +68,21 @@ win.bind('<KeyPress-Left>', left_key_press)
 win.bind('<KeyRelease-Left>', left_key_release)
 
 
+class Racket:
+    def __init__(self, x):
+        self.x = x
+
+
+racket = Racket(170)
+
+
 def draw_racket():
-    global rack_x
-    can.create_rectangle(rack_x, 580, rack_x + 60, 595, fill='white')
-    if key_press_r and rack_x <= 350:
-        rack_x += 5
-    if key_press_l and rack_x >= -10:
-        rack_x -= 5
+    global racket
+    can.create_rectangle(racket.x, 580, racket.x + 60, 595, fill='white')
+    if key_press_r and racket.x <= 350:
+        racket.x += 5
+    if key_press_l and racket.x >= -10:
+        racket.x -= 5
 
 
 class Block:
