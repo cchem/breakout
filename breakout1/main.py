@@ -56,6 +56,7 @@ class Block:
     def shape_parameters(self):
         return self.x, self.y, self.x + 70, self.y + 30
 
+
 class Blocks:
     def __init__(self, blocks: List[Block]):
         assert hasattr(blocks, '__iter__')
