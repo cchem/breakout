@@ -24,7 +24,7 @@ def game_clear():
     sys.exit()
 
 
-def draw_ball():
+def draw_ball(racket):
     global ball_x, ball_y, bx, by
     can.create_oval(ball_x, ball_y, ball_x + 20, ball_y + 20, fill='white')
 
@@ -75,16 +75,16 @@ class Racket:
         self.x = x
 
 
-racket = Racket(170)
-
-
-def draw_racket():
-    global racket
+def draw_racket(racket):
     can.create_rectangle(racket.x, 580, racket.x + 60, 595, fill='white')
+
+
+def update_racket(racket):
     if key_press_r and racket.x <= 350:
         racket.x += 5
     if key_press_l and racket.x >= -10:
         racket.x -= 5
+    return racket
 
 
 class Block:
@@ -111,14 +111,20 @@ def draw_block():
         game_clear()
 
 
-def game_loop():
-    can.delete('all')
-    draw_ball()
-    draw_racket()
-    draw_block()
-    win.after(15, game_loop)
+class GameBoard:
+    def __init__(self, racket):
+        self.racket = racket
+
+    def loop(self):
+        can.delete('all')
+        draw_ball(self.racket)
+        self.racket = update_racket(self.racket)
+        draw_racket(self.racket)
+        draw_block()
+        win.after(15, self.loop)
 
 
-game_loop()
+game_board = GameBoard(Racket(170))
+game_board.loop()
 
 win.mainloop()
