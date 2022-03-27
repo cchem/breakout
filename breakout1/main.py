@@ -1,6 +1,7 @@
 import sys
 import tkinter as tk
 from tkinter import messagebox
+from typing import List
 
 win = tk.Tk()
 win.title('breakout')
@@ -94,27 +95,44 @@ class Block:
         self.y = y
         self.is_broken = False
 
-
-blocks = [Block(80 * xx + 5, 40 * yy + 10) for xx in range(5) for yy in range(4)]
-
-
-def draw_block(ball):
-    block_count = 0
-    for block in blocks:
-        if ball.y <= block.y + 30 and block.x - 10 <= ball.x <= block.x + 60 and not block.is_broken:
+    def update(self, ball: Ball):
+        if ball.y <= self.y + 30 and self.x - 10 <= ball.x <= self.x + 60 and not self.is_broken:
             ball.vy *= -1
-            block.is_broken = True
-        if not block.is_broken:
-            can.create_rectangle(block.x, block.y, block.x + 70, block.y + 30, fill='white')
-            block_count += 1
-    if block_count == 0:
-        game_clear()
+            self.is_broken = True
+
+    def draw(self):
+        if not self.is_broken:
+            can.create_rectangle(self.x, self.y, self.x + 70, self.y + 30, fill='white')
+
+
+class Blocks:
+    def __init__(self, blocks: List[Block]):
+        assert hasattr(blocks, '__iter__')
+        for i in blocks:
+            assert isinstance(i, Block)
+        self.blocks = blocks
+
+    def update(self, ball: Ball):
+        for block in self.blocks:
+            block.update(ball)
+
+    def draw(self):
+        for block in self.blocks:
+            block.draw()
+
+    def all_broken(self):
+        broken_flag = [i.is_broken for i in self.blocks]
+        return all(broken_flag)
 
 
 class GameBoard:
-    def __init__(self, racket, ball):
+    def __init__(self, racket: Racket, ball: Ball, blocks: Blocks):
         self.racket = racket
         self.ball = ball
+        self.blocks = blocks
+
+    def is_clear(self):
+        return self.blocks.all_broken()
 
     def loop(self):
         can.delete('all')
@@ -123,11 +141,19 @@ class GameBoard:
 
         self.ball.draw()
         self.racket.draw()
-        draw_block(self.ball)
+
+        self.blocks.update(self.ball)
+        self.blocks.draw()
+        if self.is_clear():
+            game_clear()
         win.after(15, self.loop)
 
 
-game_board = GameBoard(Racket(170), Ball(x=50, y=500, vx=5, vy=-5))
+game_board = GameBoard(
+    Racket(170),
+    Ball(x=50, y=500, vx=5, vy=-5),
+    Blocks([Block(80 * xx + 5, 40 * yy + 10) for xx in range(5) for yy in range(4)])
+)
 game_board.loop()
 
 win.mainloop()
