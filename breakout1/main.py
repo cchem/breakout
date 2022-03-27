@@ -10,9 +10,6 @@ win.resizable(False, False)
 can = tk.Canvas(bg='black', width=400, height=600)
 can.place(x=10, y=10)
 
-ball_x, ball_y = 50, 500
-bx, by = 5, -5
-
 
 def game_over():
     messagebox.showinfo('Information', 'Game over!')
@@ -22,22 +19,6 @@ def game_over():
 def game_clear():
     messagebox.showinfo('Information', 'Game Clear!')
     sys.exit()
-
-
-def draw_ball(racket):
-    global ball_x, ball_y, bx, by
-    can.create_oval(ball_x, ball_y, ball_x + 20, ball_y + 20, fill='white')
-
-    if ball_x <= 0 or ball_x >= 385:
-        bx *= -1
-    if ball_y <= 0:
-        by *= -1
-    if ball_y >= 603:
-        game_over()
-    if ball_y >= 560 and racket.x - 10 <= ball_x <= racket.x + 50:
-        by *= -1
-    ball_x += bx
-    ball_y += by
 
 
 key_press_r = False
@@ -84,6 +65,29 @@ class Racket:
         can.create_rectangle(self.x, 580, self.x + 60, 595, fill='white')
 
 
+class Ball:
+    def __init__(self, x, y, vx, vy):
+        self.x = x
+        self.y = y
+        self.vx = vx
+        self.vy = vy
+
+    def update(self, racket: Racket):
+        if self.x <= 0 or 385 <= self.x:
+            self.vx *= -1
+        if self.y <= 0:
+            self.vy *= -1
+        if self.y >= 603:
+            game_over()
+        if self.y >= 560 and racket.x - 10 <= self.x <= racket.x + 50:
+            self.vy *= -1
+        self.x += self.vx
+        self.y += self.vy
+
+    def draw(self):
+        can.create_oval(self.x, self.y, self.x + 20, self.y + 20, fill='white')
+
+
 class Block:
     def __init__(self, x, y):
         self.x = x
@@ -94,12 +98,11 @@ class Block:
 blocks = [Block(80 * xx + 5, 40 * yy + 10) for xx in range(5) for yy in range(4)]
 
 
-def draw_block():
-    global ball_x, ball_y, by
+def draw_block(ball):
     block_count = 0
     for block in blocks:
-        if ball_y <= block.y + 30 and block.x - 10 <= ball_x <= block.x + 60 and not block.is_broken:
-            by *= -1
+        if ball.y <= block.y + 30 and block.x - 10 <= ball.x <= block.x + 60 and not block.is_broken:
+            ball.vy *= -1
             block.is_broken = True
         if not block.is_broken:
             can.create_rectangle(block.x, block.y, block.x + 70, block.y + 30, fill='white')
@@ -109,19 +112,22 @@ def draw_block():
 
 
 class GameBoard:
-    def __init__(self, racket):
+    def __init__(self, racket, ball):
         self.racket = racket
+        self.ball = ball
 
     def loop(self):
         can.delete('all')
-        draw_ball(self.racket)
+        self.ball.update(self.racket)
         self.racket.update()
+
+        self.ball.draw()
         self.racket.draw()
-        draw_block()
+        draw_block(self.ball)
         win.after(15, self.loop)
 
 
-game_board = GameBoard(Racket(170))
+game_board = GameBoard(Racket(170), Ball(x=50, y=500, vx=5, vy=-5))
 game_board.loop()
 
 win.mainloop()
