@@ -14,8 +14,9 @@ class Racket:
         if key_press_l and self.x >= -10:
             self.x -= 5
 
-    def draw(self, can):
-        can.create_rectangle(self.x, 580, self.x + 60, 595, fill='white')
+    @property
+    def shape_parameters(self):
+        return self.x, 580, self.x + 60, 595
 
 
 class Ball:
@@ -35,8 +36,9 @@ class Ball:
         self.x += self.vx
         self.y += self.vy
 
-    def draw(self, can):
-        can.create_oval(self.x, self.y, self.x + 20, self.y + 20, fill='white')
+    @property
+    def shape_parameters(self):
+        return self.x, self.y, self.x + 20, self.y + 20
 
 
 class Block:
@@ -50,28 +52,27 @@ class Block:
             ball.vy *= -1
             self.is_broken = True
 
-    def draw(self, can):
-        if not self.is_broken:
-            can.create_rectangle(self.x, self.y, self.x + 70, self.y + 30, fill='white')
-
+    @property
+    def shape_parameters(self):
+        return self.x, self.y, self.x + 70, self.y + 30
 
 class Blocks:
     def __init__(self, blocks: List[Block]):
         assert hasattr(blocks, '__iter__')
         for i in blocks:
             assert isinstance(i, Block)
-        self.blocks = blocks
+        self._blocks = blocks
+
+    def __iter__(self):
+        for i in self._blocks:
+            yield i
 
     def update(self, ball: Ball):
-        for block in self.blocks:
+        for block in self._blocks:
             block.update(ball)
 
-    def draw(self, can):
-        for block in self.blocks:
-            block.draw(can)
-
     def all_broken(self):
-        broken_flag = [i.is_broken for i in self.blocks]
+        broken_flag = [i.is_broken for i in self._blocks]
         return all(broken_flag)
 
 
@@ -145,9 +146,9 @@ class Application:
     def loop(self):
         self.can.delete('all')
         self.board.update(self.key_press_r, self.key_press_l)
-        self.board.ball.draw(self.can)
-        self.board.racket.draw(self.can)
-        self.board.blocks.draw(self.can)
+        self.draw_racket()
+        self.draw_ball()
+        self.draw_blocks()
 
         if self.board.is_game_over():
             self.board.game_over()
@@ -158,6 +159,20 @@ class Application:
     def run(self):
         self.loop()
         self.win.mainloop()
+
+    def draw_racket(self):
+        parameters = self.board.racket.shape_parameters
+        self.can.create_rectangle(*parameters, fill='white')
+
+    def draw_ball(self):
+        parameters = self.board.ball.shape_parameters
+        self.can.create_oval(*parameters, fill='white')
+
+    def draw_blocks(self):
+        for block in self.board.blocks:
+            if not block.is_broken:
+                parameter = block.shape_parameters
+                self.can.create_rectangle(*parameter, fill='white')
 
 
 def main():
