@@ -74,17 +74,14 @@ class Racket:
     def __init__(self, x):
         self.x = x
 
+    def update(self):
+        if key_press_r and self.x <= 350:
+            self.x += 5
+        if key_press_l and self.x >= -10:
+            self.x -= 5
 
-def draw_racket(racket):
-    can.create_rectangle(racket.x, 580, racket.x + 60, 595, fill='white')
-
-
-def update_racket(racket):
-    if key_press_r and racket.x <= 350:
-        racket.x += 5
-    if key_press_l and racket.x >= -10:
-        racket.x -= 5
-    return racket
+    def draw(self):
+        can.create_rectangle(self.x, 580, self.x + 60, 595, fill='white')
 
 
 class Block:
@@ -118,8 +115,8 @@ class GameBoard:
     def loop(self):
         can.delete('all')
         draw_ball(self.racket)
-        self.racket = update_racket(self.racket)
-        draw_racket(self.racket)
+        self.racket.update()
+        self.racket.draw()
         draw_block()
         win.after(15, self.loop)
 
