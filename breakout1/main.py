@@ -43,7 +43,7 @@ class Ball:
         self.size = size
 
     def update(self, racket: Racket):
-        hit_wall = self.x <= 0 or 385 <= self.x
+        hit_wall = self.left <= 0 or 400 <= self.right
         if hit_wall:
             self.vx *= -1
 
@@ -51,7 +51,7 @@ class Ball:
         if hit_ceil:
             self.vy *= -1
 
-        hit_racket = self.y >= 560 and racket.x - 10 <= self.x <= racket.x + 50
+        hit_racket = self.bottom >= racket.top and racket.left <= self.x <= racket.right
         if hit_racket:
             self.vy *= -1
 
@@ -60,19 +60,19 @@ class Ball:
 
     @property
     def left(self):
-        return self.x
+        return self.x - self.size / 2
 
     @property
     def top(self):
-        return self.y
+        return self.y - self.size / 2
 
     @property
     def right(self):
-        return self.x + self.size
+        return self.x + self.size / 2
 
     @property
     def bottom(self):
-        return self.y + self.size
+        return self.y + self.size / 2
 
 
 class Block:
@@ -84,7 +84,7 @@ class Block:
         self.is_broken = False
 
     def update(self, ball: Ball):
-        hit_ball = ball.y <= self.y + 30 and self.x - 10 <= ball.x <= self.x + 60
+        hit_ball = ball.top <= self.bottom and self.x <= ball.x <= self.x + self.width
         if not self.is_broken and hit_ball:
             ball.vy *= -1
             self.is_broken = True
@@ -177,7 +177,7 @@ class Application:
 
         self.board = GameBoard(
             Racket(170),
-            Ball(x=50, y=500, vx=5, vy=-5),
+            Ball(x=60, y=510, vx=5, vy=-5),
             Blocks([Block(80 * xx + 5, 40 * yy + 10) for xx in range(5) for yy in range(4)])
         )
 
