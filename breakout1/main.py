@@ -43,12 +43,18 @@ class Ball:
         self.size = size
 
     def update(self, racket: Racket):
-        if self.x <= 0 or 385 <= self.x:
+        hit_wall = self.x <= 0 or 385 <= self.x
+        if hit_wall:
             self.vx *= -1
-        if self.y <= 0:
+
+        hit_ceil = self.y <= 0
+        if hit_ceil:
             self.vy *= -1
-        if self.y >= 560 and racket.x - 10 <= self.x <= racket.x + 50:
+
+        hit_racket = self.y >= 560 and racket.x - 10 <= self.x <= racket.x + 50
+        if hit_racket:
             self.vy *= -1
+
         self.x += self.vx
         self.y += self.vy
 
@@ -78,7 +84,8 @@ class Block:
         self.is_broken = False
 
     def update(self, ball: Ball):
-        if ball.y <= self.y + 30 and self.x - 10 <= ball.x <= self.x + 60 and not self.is_broken:
+        hit_ball = ball.y <= self.y + 30 and self.x - 10 <= ball.x <= self.x + 60
+        if not self.is_broken and hit_ball:
             ball.vy *= -1
             self.is_broken = True
 
