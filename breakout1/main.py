@@ -5,8 +5,11 @@ from typing import List
 
 
 class Racket:
-    def __init__(self, x):
+    def __init__(self, x, y=580, width=60, height=15):
         self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
 
     def update(self, key_press_r, key_press_l):
         if key_press_r and self.x <= 350:
@@ -15,16 +18,29 @@ class Racket:
             self.x -= 5
 
     @property
-    def shape_parameters(self):
-        return self.x, 580, self.x + 60, 595
+    def left(self):
+        return self.x
+
+    @property
+    def top(self):
+        return self.y
+
+    @property
+    def right(self):
+        return self.x + self.width
+
+    @property
+    def bottom(self):
+        return self.y + self.height
 
 
 class Ball:
-    def __init__(self, x, y, vx, vy):
+    def __init__(self, x, y, vx, vy, size=20):
         self.x = x
         self.y = y
         self.vx = vx
         self.vy = vy
+        self.size = size
 
     def update(self, racket: Racket):
         if self.x <= 0 or 385 <= self.x:
@@ -37,14 +53,28 @@ class Ball:
         self.y += self.vy
 
     @property
-    def shape_parameters(self):
-        return self.x, self.y, self.x + 20, self.y + 20
+    def left(self):
+        return self.x
+
+    @property
+    def top(self):
+        return self.y
+
+    @property
+    def right(self):
+        return self.x + self.size
+
+    @property
+    def bottom(self):
+        return self.y + self.size
 
 
 class Block:
-    def __init__(self, x, y):
+    def __init__(self, x, y, width=70, height=30):
         self.x = x
         self.y = y
+        self.width = width
+        self.height = height
         self.is_broken = False
 
     def update(self, ball: Ball):
@@ -53,8 +83,20 @@ class Block:
             self.is_broken = True
 
     @property
-    def shape_parameters(self):
-        return self.x, self.y, self.x + 70, self.y + 30
+    def left(self):
+        return self.x
+
+    @property
+    def top(self):
+        return self.y
+
+    @property
+    def right(self):
+        return self.x + self.width
+
+    @property
+    def bottom(self):
+        return self.y + self.height
 
 
 class Blocks:
@@ -162,18 +204,17 @@ class Application:
         self.win.mainloop()
 
     def draw_racket(self):
-        parameters = self.board.racket.shape_parameters
-        self.can.create_rectangle(*parameters, fill='white')
+        r = self.board.racket
+        self.can.create_rectangle(r.left, r.top, r.right, r.bottom, fill='white')
 
     def draw_ball(self):
-        parameters = self.board.ball.shape_parameters
-        self.can.create_oval(*parameters, fill='white')
+        b = self.board.ball
+        self.can.create_oval(b.left, b.top, b.right, b.bottom, fill='white')
 
     def draw_blocks(self):
-        for block in self.board.blocks:
-            if not block.is_broken:
-                parameter = block.shape_parameters
-                self.can.create_rectangle(*parameter, fill='white')
+        for b in self.board.blocks:
+            if not b.is_broken:
+                self.can.create_rectangle(b.left, b.top, b.right, b.bottom, fill='white')
 
 
 def main():
