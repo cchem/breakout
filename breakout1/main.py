@@ -13,17 +13,18 @@ class Wall:
 
 
 class Racket:
-    def __init__(self, x, y=580, width=60, height=15):
+    def __init__(self, x, y=580, width=60, height=15, velocity=5):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+        self.velocity = velocity
 
     def update(self, key_press_r, key_press_l, wall: Wall):
         if key_press_r and self.right <= wall.right + 10:
-            self.x += 5
+            self.x += self.velocity
         if key_press_l and self.left >= wall.left - 10:
-            self.x -= 5
+            self.x -= self.velocity
 
     @property
     def left(self):
