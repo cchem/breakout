@@ -147,7 +147,7 @@ class GameBoard:
         return self.blocks.all_broken()
 
     def is_game_over(self):
-        return self.ball.y >= 603
+        return self.ball.y >= self.wall.bottom
 
     def update(self, key_press_r, key_press_l):
         self.ball.update(self.racket, self.wall)
