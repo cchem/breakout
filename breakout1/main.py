@@ -127,7 +127,9 @@ class Blocks:
 
 
 class GameBoard:
-    def __init__(self, racket: Racket, ball: Ball, blocks: Blocks):
+    def __init__(self, width, height, racket: Racket, ball: Ball, blocks: Blocks):
+        self.width = width
+        self.height = height
         self.racket = racket
         self.ball = ball
         self.blocks = blocks
@@ -155,10 +157,10 @@ class GameBoard:
 
 
 class Application:
-    def __init__(self):
+    def __init__(self, board: GameBoard):
         win = tk.Tk()
         win.title('breakout')
-        win.geometry('425x625')
+        win.geometry(f'{board.width + 25}x{board.height + 25}')
         win.resizable(False, False)
 
         win.bind('<KeyPress-Right>', self.right_key_press)
@@ -166,20 +168,15 @@ class Application:
         win.bind('<KeyPress-Left>', self.left_key_press)
         win.bind('<KeyRelease-Left>', self.left_key_release)
 
-        can = tk.Canvas(bg='black', width=400, height=600)
+        can = tk.Canvas(bg='black', width=board.width, height=board.height)
         can.place(x=10, y=10)
 
         self.win = win
         self.can = can
+        self.board = board
 
         self.key_press_r = False
         self.key_press_l = False
-
-        self.board = GameBoard(
-            Racket(170),
-            Ball(x=60, y=510, vx=5, vy=-5),
-            Blocks([Block(80 * xx + 5, 40 * yy + 10) for xx in range(5) for yy in range(4)])
-        )
 
     def right_key_press(self, _):
         self.key_press_r = True
@@ -225,7 +222,14 @@ class Application:
 
 
 def main():
-    application = Application()
+    game_board = GameBoard(
+        width=400,
+        height=600,
+        racket=Racket(170),
+        ball=Ball(x=60, y=510, vx=5, vy=-5),
+        blocks=Blocks([Block(80 * xx + 5, 40 * yy + 10) for xx in range(5) for yy in range(4)])
+    )
+    application = Application(game_board)
     application.run()
 
 
