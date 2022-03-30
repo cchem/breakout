@@ -19,10 +19,10 @@ class Racket:
         self.width = width
         self.height = height
 
-    def update(self, key_press_r, key_press_l):
-        if key_press_r and self.x <= 350:
+    def update(self, key_press_r, key_press_l, wall: Wall):
+        if key_press_r and self.right <= wall.right + 10:
             self.x += 5
-        if key_press_l and self.x >= -10:
+        if key_press_l and self.left >= wall.left - 10:
             self.x -= 5
 
     @property
@@ -151,7 +151,7 @@ class GameBoard:
 
     def update(self, key_press_r, key_press_l):
         self.ball.update(self.racket, self.wall)
-        self.racket.update(key_press_r, key_press_l)
+        self.racket.update(key_press_r, key_press_l, self.wall)
         self.blocks.update(self.ball)
 
     @staticmethod
