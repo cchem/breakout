@@ -4,6 +4,14 @@ from tkinter import messagebox
 from typing import List
 
 
+class Wall:
+    def __init__(self, left, right, top, bottom):
+        self.left = left
+        self.right = right
+        self.top = top
+        self.bottom = bottom
+
+
 class Racket:
     def __init__(self, x, y=580, width=60, height=15):
         self.x = x
@@ -130,6 +138,7 @@ class GameBoard:
     def __init__(self, width, height, racket: Racket, ball: Ball, blocks: Blocks):
         self.width = width
         self.height = height
+        self.wall = Wall(left=0, right=width, top=0, bottom=height)
         self.racket = racket
         self.ball = ball
         self.blocks = blocks
