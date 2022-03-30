@@ -50,12 +50,12 @@ class Ball:
         self.vy = vy
         self.size = size
 
-    def update(self, racket: Racket):
-        hit_wall = self.left <= 0 or 400 <= self.right
+    def update(self, racket: Racket, wall: Wall):
+        hit_wall = self.left <= wall.left or wall.right <= self.right
         if hit_wall:
             self.vx *= -1
 
-        hit_ceil = self.y <= 0
+        hit_ceil = self.y <= self.top
         if hit_ceil:
             self.vy *= -1
 
@@ -150,7 +150,7 @@ class GameBoard:
         return self.ball.y >= 603
 
     def update(self, key_press_r, key_press_l):
-        self.ball.update(self.racket)
+        self.ball.update(self.racket, self.wall)
         self.racket.update(key_press_r, key_press_l)
         self.blocks.update(self.ball)
 
